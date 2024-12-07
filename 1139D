@@ -1,0 +1,83 @@
+fn inverse(val: &i64) -> i64 {
+    let mut base = *val;
+    const MOD: i64 = 10_i64.pow(9) + 7;
+
+    if base % MOD == 0 {
+        return 0
+    } else {
+        let mut res: i64 = 1;
+        let mut power: i64 = 10_i64.pow(9) + 5;
+
+        while power > 0 {
+            if power & 1 == 1 {
+                res = (res * base) % MOD;
+            }
+            base = (base * base) % MOD;
+            power >>= 1;
+        }
+
+        return res
+    }
+}
+
+fn expected_value(n: usize) ->  i64 {
+    let mut sieve_array: Vec<bool> = vec![true; n + 1];
+    sieve_array[0] = false;
+    sieve_array[1] = false;
+    let mut states: Vec<Vec<usize>> = vec![vec![]; n + 1];
+
+    for i in 2..=n {
+        if sieve_array[i] {
+            states[i].push(i);
+            for j in (2*i..n + 1).step_by(i) {
+                sieve_array[j] = false;
+            }
+        }
+    }
+
+    for i in 2..=n {
+        if sieve_array[i] {
+            for j in (2*i..n + 1).step_by(i) {
+                if j % (i * i) != 0 && !states[j/i].is_empty() {
+                    states[j] = states[j/i].clone();
+                    states[j].push(i);
+                }
+            }
+        }
+    }
+
+    let mut s: Vec<i64> = vec![0; n + 1];
+    let mut total_expectation: i64 = 1;
+    const MOD: i64 = 10_i64.pow(9) + 7;
+
+    for j in 0..=n {
+        let m = states[j].len();
+        let mut prob: i64 = 0;
+        let mut total: i64 = 1;
+
+        for mask in 1..1<<m {
+            let mut num: usize = 1;
+            let mut num_bits: u32 = 0;
+            for i in 0..m {
+                if mask & 1<<i != 0 {
+                    num *= states[j][i];
+                    num_bits += 1;
+                }
+            }
+            prob += (n/num) as i64 * (-1_i64).pow(1 +num_bits);
+            if num_bits < m as u32 {
+                total += s[num];
+                total %= MOD;
+            }
+        }
+
+        s[j] = ((total * prob) % MOD)*inverse(&(n as i64 - prob));
+        s[j] %= MOD;
+        total_expectation += s[j];
+        total_expectation %= MOD;
+
+    }
+
+    return total_expectation
+
+}
