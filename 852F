@@ -29,6 +29,7 @@ fn inverse(val: &usize, prime: &usize) -> usize {
         return exp(&base, &(modulus - 2), &modulus)
     }
 }
+
 fn sieve(m: &usize) -> Vec<usize>{
     let sqrt: usize = (*m as f64).sqrt() as usize;
     let mut n: usize = *m;
