@@ -20,6 +20,7 @@ fn robot(n: usize, k: usize, mut weights: Vec<i64>, queries: Vec<Vec<usize>>) ->
     }
 
     let mut t: Vec<i64> = vec![0; n];
+    let mut sum: i64 = 0;
 
     for i in 0..n {
         for j in 0..=k {
@@ -38,10 +39,6 @@ fn robot(n: usize, k: usize, mut weights: Vec<i64>, queries: Vec<Vec<usize>>) ->
             }
             t[i] %= MOD;
         }
-    }
-
-    let mut sum: i64 = 0;
-    for i in 0..n {
         sum += t[i] * weights[i];
         sum %= MOD;
     }
