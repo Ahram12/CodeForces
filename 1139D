@@ -20,7 +20,7 @@ fn inverse(val: &i64) -> i64 {
     }
 }
 
-fn expected_value(n: usize) ->  i64 {
+fn expected_length(n: usize) -> i64 {
     let mut sieve_array: Vec<bool> = vec![true; n + 1];
     sieve_array[0] = false;
     sieve_array[1] = false;
@@ -30,54 +30,72 @@ fn expected_value(n: usize) ->  i64 {
         if sieve_array[i] {
             states[i].push(i);
             for j in (2*i..n + 1).step_by(i) {
+                let mut temp = j;
+                while temp % i == 0 {
+                    temp /= i;
+                }
+                if temp > 1  {
+                    states[j] = states[temp].clone();
+                    states[j].push(i); 
+                } else {
+                    states[j].push(i);
+                }
                 sieve_array[j] = false;
             }
         }
     }
-
-    for i in 2..=n {
-        if sieve_array[i] {
-            for j in (2*i..n + 1).step_by(i) {
-                if j % (i * i) != 0 && !states[j/i].is_empty() {
-                    states[j] = states[j/i].clone();
-                    states[j].push(i);
-                }
-            }
-        }
-    }
-
-    let mut s: Vec<i64> = vec![0; n + 1];
-    let mut total_expectation: i64 = 1;
+    
+    let mut total_expectation: i64 = 0;
     const MOD: i64 = 10_i64.pow(9) + 7;
-
-    for j in 0..=n {
-        let m = states[j].len();
-        let mut prob: i64 = 0;
-        let mut total: i64 = 1;
-
-        for mask in 1..1<<m {
-            let mut num: usize = 1;
-            let mut num_bits: u32 = 0;
-            for i in 0..m {
-                if mask & 1<<i != 0 {
-                    num *= states[j][i];
-                    num_bits += 1;
-                }
-            }
-            prob += (n/num) as i64 * (-1_i64).pow(1 +num_bits);
-            if num_bits < m as u32 {
-                total += s[num];
-                total %= MOD;
+    let mut s: Vec<i64> = vec![0; n + 1];
+    
+    for j in 2..=n {
+        let mut divisors: Vec<usize> = Vec::new();
+        let temp = (j as f64).sqrt() as usize;
+        for i in 1..=temp {
+            if j % i == 0 {
+                divisors.push(i);
             }
         }
-
-        s[j] = ((total * prob) % MOD)*inverse(&(n as i64 - prob));
+        
+        for i in (0..divisors.len()).rev() {
+            if j / divisors[i] != divisors[i] {
+                divisors.push(j/divisors[i])
+            }
+        }
+        
+        let mut expectation = n as i64;
+        let m = divisors.len();
+        for d in 1..m - 1 {
+            let l = states[j/divisors[d]].len();
+            let mut totient: i64 = 0;
+            let total: usize = n/divisors[d];
+            
+            for mask in 1..1<<l {
+                let mut num: usize = 1;
+                let mut num_bits: u32 = 0;
+                for i in 0..l {
+                    if mask & 1<<i != 0 {
+                        num *= states[j/divisors[d]][i];
+                        num_bits += 1;
+                    }
+                }
+                totient += (total/num) as i64 * (-1_i64).pow(1 + num_bits);
+            }
+            
+            expectation += s[divisors[d]]*(total as i64 - totient);
+            expectation %= MOD;
+        }
+        
+        s[j] = inverse(&((n - (n/j)) as i64)) * expectation;
         s[j] %= MOD;
         total_expectation += s[j];
         total_expectation %= MOD;
-
     }
-
+    
+    total_expectation *= inverse(&(n as i64));
+    total_expectation += 1;
+    total_expectation %= MOD;
+    
     return total_expectation
-
 }
