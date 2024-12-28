@@ -1,6 +1,6 @@
-
-//CodeForces 1957E
+use std::io;
 use std::cmp;
+ 
 fn carousel(n: usize) -> usize {
     let mut sieve_array: Vec<bool> = vec![true; n + 1];
     sieve_array[0] = false;
@@ -63,4 +63,34 @@ fn carousel(n: usize) -> usize {
 
     return sum
 
+}
+ 
+fn main() {
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+    let num_lines: usize = v[0].parse().expect("REASON");
+    
+    let mut cases: Vec<usize> = Vec::new();
+    
+    for _ in 0..num_lines {
+        let mut temp: String = String::new();
+        
+        io::stdin()
+        .read_line(&mut temp)
+        .expect("Failed to read line");
+        
+        let w: Vec<&str> = temp.trim().split(' ').collect();
+        
+        cases.push(w[0].parse().expect("REASON"));
+    }
+
+        
+    for i in 0..num_lines {
+        println!("{:?}", carousel(cases[i]))
+    }
 }
