@@ -1,13 +1,15 @@
+use std::io;
+ 
 fn inverse(val: &i64) -> i64 {
     let mut base = *val;
     const MOD: i64 = 10_i64.pow(9) + 7;
-
+ 
     if base % MOD == 0 {
         return 0
     } else {
         let mut res: i64 = 1;
         let mut power: i64 = 10_i64.pow(9) + 5;
-
+ 
         while power > 0 {
             if power & 1 == 1 {
                 res = (res * base) % MOD;
@@ -15,17 +17,17 @@ fn inverse(val: &i64) -> i64 {
             base = (base * base) % MOD;
             power >>= 1;
         }
-
+ 
         return res
     }
 }
-
+ 
 fn expected_length(n: usize) -> i64 {
     let mut sieve_array: Vec<bool> = vec![true; n + 1];
     sieve_array[0] = false;
     sieve_array[1] = false;
     let mut states: Vec<Vec<usize>> = vec![vec![]; n + 1];
-
+ 
     for i in 2..=n {
         if sieve_array[i] {
             states[i].push(i);
@@ -98,4 +100,18 @@ fn expected_length(n: usize) -> i64 {
     total_expectation %= MOD;
     
     return total_expectation
+}
+ 
+fn main() {
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+ 
+    let n: usize = v[0].parse().expect("REASON");
+ 
+    println!("{:?}", expected_length(n))
 }
