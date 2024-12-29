@@ -1,9 +1,11 @@
+use std::io;
+ 
 fn exp(a: &usize, p: &usize, q: &usize) -> usize {
     let modulus: usize = *q;
     let mut base: usize = *a;
     let mut exp: usize = *p;
     let mut total: usize = 1;
-
+ 
     while exp > 0 {
         if exp & 1 == 1 {
             total *= base;
@@ -13,23 +15,23 @@ fn exp(a: &usize, p: &usize, q: &usize) -> usize {
         base %= modulus;
         exp >>= 1;
     }
-
+ 
     total %= modulus;
-
+ 
     return total
 }
-
+ 
 fn inverse(val: &usize, prime: &usize) -> usize {
     let base = *val;
     let modulus: usize = *prime;
-
+ 
     if base % modulus == 0 {
         return 0
     } else {
         return exp(&base, &(modulus - 2), &modulus)
     }
 }
-
+ 
 fn sieve(m: &usize) -> Vec<usize>{
     let sqrt: usize = (*m as f64).sqrt() as usize;
     let mut n: usize = *m;
@@ -37,7 +39,7 @@ fn sieve(m: &usize) -> Vec<usize>{
     sieve_array[0] = false;
     sieve_array[1] = false;
     let mut primes: Vec<usize> = Vec::new();
-
+ 
     for i in 2..=sqrt {
         if n == 1 {
             break
@@ -57,12 +59,12 @@ fn sieve(m: &usize) -> Vec<usize>{
     if n > 1 {
         primes.push(n);
     }
-
+ 
     return primes
-
+ 
 }
-
-fn transformation(n: usize, m: usize, a: usize, q: usize) -> Vec<usize> {
+ 
+fn transformation(n: usize, m: usize, a: usize, q: usize)  {
     let mut primes: Vec<usize> = sieve(&q).clone();
     let mut totient: usize = 1;
     let mut val: usize = q;
@@ -71,18 +73,18 @@ fn transformation(n: usize, m: usize, a: usize, q: usize) -> Vec<usize> {
         totient *= (*prime) - 1;
     }
     totient *= val;
-
+ 
     primes.clear();
     primes = sieve(&totient).clone();
     let mut mult_order: usize = 0;
-
+ 
     for prime in primes {
         if exp(&a, &prime, &q) == 1 {
             mult_order = prime;
             break
         }
     }
-
+ 
     let mut c: Vec<usize> = vec![0; m + 2];
     if mult_order == m + 1 {
         c[0] = 1;
@@ -95,20 +97,42 @@ fn transformation(n: usize, m: usize, a: usize, q: usize) -> Vec<usize> {
             factorial[i] %= mult_order;
             inverses[i] = inverse(&factorial[i], &mult_order);
         }
-
+ 
         c[0] = 1;
         for i in 1..m + 2 {
             c[i] = (factorial[m + 1]*inverses[i]*inverses[m + 1 - i]) % mult_order;
         }
     }
-
+ 
     let mut arr: Vec<usize> = vec![0; n];
     let mut base: [usize; 2] = [0, 0];
     for i in (0..n).rev() {
         base[(n - 1 - i) % 2] += if m + i + 2 >= n {c[n - 1 - i]} else {0};
-        arr[i] = exp(&a, &base[(n - 1 - i) % 2], &q)
-
+        arr[i] = exp(&a, &base[(n - 1 - i) % 2], &q);
     }
-
-    return arr
+ 
+    for i in 0..n {
+        if i < n - 1 {
+            print!("{0} {1}", arr[i], ' ');
+        } else {
+            print!("{0} {1}", arr[i], '\r');
+        }
+    }
+}
+ 
+fn main() {
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+ 
+    let n: usize = v[0].parse().expect("REASON");
+    let m: usize = v[1].parse().expect("REASON");
+    let a: usize = v[2].parse().expect("REASON");
+    let q: usize = v[3].parse().expect("REASON");
+    
+    transformation(n, m, a, q)
 }
