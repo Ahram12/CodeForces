@@ -49,11 +49,6 @@ fn carousel(n: usize, cases: Vec<usize>) {
         s[j] %= MOD;
     }
     
-    
-    while s[n] < 0 {
-        s[n] += MOD;
-    }
-    
     let m = cases.len();
     for i in 0..m {
         println!("{:?}", s[cases[i]])
