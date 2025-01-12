@@ -66,6 +66,7 @@ fn permutations(n: usize, k: usize) {
     
     for i in 2..=k {
         t[i] += t[i - 2];
+        t[i] %= MOD;
     }
     
     for i in 1..=num_cases {
