@@ -65,9 +65,9 @@ fn main() {
     }
     
     let mut total: i64 = prefix[0];
-    let mut f: Vec<i64> = vec![0; max + 1];
+    let mut f: Vec<Vec<i64>> = vec![vec![0; max + 1]];
     for i in 1..=l[0] {
-        f[i] = (c[i]*s[l[0] - 1][i - 1]) % p;
+        f[0][i] = (c[i]*s[l[0] - 1][i - 1]) % p;
     }
     
     
@@ -75,14 +75,23 @@ fn main() {
         let mut sum: i64 = 0;
         let mut temp: Vec<i64> = vec![0; max + 1];
         for j in 1..=l[i] {
-            let val: i64 = (((f[j]*factorial[j]) % p) * s[l[i] - 1][j - 1]) % p;
+            let val: i64 = (((f[0][j]*factorial[j]) % p) * s[l[i] - 1][j - 1]) % p;
             sum += val;
             sum %= p;
             temp[j] = (((total*((c[j]*s[l[i] - 1][j - 1]) % p)) % p) - val) % p;
         }
         total = ((total * prefix[i]) % p) - sum;
-        f = temp.clone();
+        f.pop();
+        f.push(temp);
     }
     
-    println!("{:?}", total)
+    while total < 0 {
+        total += p;
+    }
+
+    while total < 0 {
+        total += p;
+    }
+    
+    println!("{:?}", total % p)
 }
