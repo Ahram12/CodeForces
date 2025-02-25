@@ -1,0 +1,88 @@
+use std::io;
+use std::cmp;
+
+fn main() {
+    let mut str: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut str)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = str.trim().split(' ').collect();
+    let n: usize = v[0].parse().expect("REASON");
+    let m: usize = v[1].parse().expect("REASON");
+    let p: i64 = v[2].parse().expect("REASON");
+    
+    let mut l: Vec<usize> = Vec::new();
+    let mut max: usize = 0;
+
+    let mut temp: String = String::new();
+
+    io::stdin()
+        .read_line(&mut temp)
+        .expect("Failed to read line");
+        
+    let w: Vec<&str> = temp.trim().split(' ').collect();
+
+    for i in 0..n {
+      let val: usize = w[i].parse().expect("REASON");
+      max = cmp::max(max, val);
+      l.push(val);
+    }
+    
+    let mut s: Vec<Vec<i64>> = vec![vec![0; max + 1]; max + 1];
+    s[0][0] = 1;
+    
+    for i in 1..=max {
+        for j in 1..=i {
+            if i == j {
+                s[i][j] = 1;
+            } else {
+                s[i][j] = ((((j as i64)*s[i - 1][j]) % p) + s[i - 1][j - 1]) % p;
+            }
+        }
+    }
+    
+    let mut c: Vec<i64> = vec![0; max + 1];
+    c[0] = 1;
+    for i in 1..=cmp::min(max, m) {
+        c[i] = (c[i - 1]*(m - i + 1) as i64) % p;
+    }
+    
+    let mut factorial: Vec<i64> = vec![1; max + 1];
+    for i in 1..=max {
+        factorial[i] = ((i as i64)*factorial[i - 1]) % p;
+    }
+    
+    let mut prefix: Vec<i64> = vec![0; n];
+    for i in 0..n {
+        let mut sum: i64 = 0;
+        for j in 1..=l[i] {
+            sum += (c[j]*s[l[i] - 1][j - 1]) % p;
+            sum %= p;
+        }
+        prefix[i] = sum;
+    }
+    
+    let mut total: i64 = prefix[0];
+    let mut f: Vec<i64> = vec![0; max + 1];
+    for i in 1..=l[0] {
+        f[i] = (c[i]*s[l[0] - 1][i - 1]) % p;
+    }
+    
+    
+    for i in 1..n {
+        let mut sum: i64 = 0;
+        let mut temp: Vec<i64> = vec![0; max + 1];
+        for j in 1..=l[i] {
+            let val: i64 = (((f[j]*factorial[j]) % p) * s[l[i] - 1][j - 1]) % p;
+            sum += val;
+            sum %= p;
+            temp[j] = (((total*((c[j]*s[l[i] - 1][j - 1]) % p)) % p) - val) % p;
+        }
+        total = ((total * prefix[i]) % p) - sum;
+        f = temp.clone();
+    }
+    
+    println!("{:?}", total)
+}
