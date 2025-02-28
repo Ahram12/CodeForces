@@ -1,3 +1,4 @@
+use std::io;
 use std::cmp;
 
 fn inverse(val: &i64) -> i64 {
@@ -23,9 +24,38 @@ fn inverse(val: &i64) -> i64 {
 }
 
 fn main() {
-    let a: Vec<i64> = vec![1,4,9];
-    let b: Vec<i64> = vec![100,121,144];
-    let d: usize = 2;
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+    let d: usize = v[0].parse().expect("REASON");
+
+    let mut a: Vec<i64> = Vec::new();
+    let mut b: Vec<i64> = Vec::new();
+
+    for i in 0..2 {
+        let mut temp_string: String = String::new();
+
+        io::stdin()
+            .read_line(&mut temp_string)
+            .expect("Failed to read line");
+
+        let temp_v: Vec<&str> = temp_string.trim().split(' ').collect();
+
+        if i == 0 {
+            for j in 0..=d {
+                a.push(temp_v[j].parse().expect("REASON"));
+            }
+        } else {
+            for j in 0..=d {
+                b.push(temp_v[j].parse().expect("REASON"));
+            }
+        }
+    }
+
     const MOD: i64 = 10_i64.pow(9) + 7;
     let mut val: i64 = 1;
     let mut inverse_val: i64 = 1;
