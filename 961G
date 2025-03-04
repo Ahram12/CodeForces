@@ -1,0 +1,72 @@
+use std::cmp;
+
+fn exp(a: &i64, p: &i64, q: &i64) -> i64 {
+    let modulus: i64 = *q;
+    let mut base: i64 = *a;
+    let mut exp: i64 = *p;
+    let mut total: i64 = 1;
+ 
+    while exp > 0 {
+        if exp & 1 == 1 {
+            total *= base;
+            total %= modulus;
+        }
+        base *= base;
+        base %= modulus;
+        exp >>= 1;
+    }
+ 
+    total %= modulus;
+ 
+    return total
+}
+ 
+fn inverse(val: &i64, prime: &i64) -> i64 {
+    let base = *val;
+    let modulus: i64 = *prime;
+ 
+    if base % modulus == 0 {
+        return 0
+    } else {
+        return exp(&base, &(modulus - 2), &modulus)
+    }
+}
+
+fn main() {
+    let n: usize = 5;
+    let k: usize = 2;
+    const MOD: i64 = 10_i64.pow(9) + 7;
+    
+    let mut prod: i64 = 1;
+    let mut inverses: Vec<i64> = vec![1; k];
+    let mut exponents: Vec<i64> = vec![1; k];
+    
+    for i in 1..k {
+        prod *= inverse(&(i as i64), &MOD);
+        inverses[i] = prod;
+        exponents[i] = exp(&(i as i64 + 1), &(n as i64 - 2), &MOD);
+    }
+    
+    let mut c: Vec<i64> = vec![1; k];
+    for i in 0..=k/2 {
+        c[i] = (inverses[i]*inverses[k - 1 - i]) % MOD;
+    }
+    
+    let mut total: i64 = 0;
+    let mut pow: i64 = -1_i64.pow(k as u32 - 1);
+    
+    for i in 0..k {
+        let mut temp: i64 = 1;
+        temp *= pow*((((c[cmp::min(i, k - 1 - i)]*exponents[i]) % MOD) * (n + i) as i64) % MOD);
+        total += temp;
+        total %= MOD;
+        pow *= -1;
+    }
+    
+    while total < 0 {
+        total += MOD;
+    }
+    
+    println!("{:?}", total)
+    
+}
