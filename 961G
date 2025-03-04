@@ -48,7 +48,7 @@ fn main() {
     }
     
     let mut c: Vec<i64> = vec![1; k];
-    for i in 0..=k/2 {
+    for i in 0..=(k - 1)/2 {
         c[i] = (inverses[i]*inverses[k - 1 - i]) % MOD;
     }
     
