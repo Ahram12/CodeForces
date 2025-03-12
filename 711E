@@ -1,0 +1,103 @@
+use std::io;
+
+fn exp(a: &i64, p: &i64, q: &i64) -> i64 {
+    let modulus: i64 = *q;
+    let mut base: i64 = *a;
+    let mut exp: i64 = *p;
+    let mut total: i64 = 1;
+ 
+    while exp > 0 {
+        if exp & 1 == 1 {
+            total *= base;
+            total %= modulus;
+        }
+        base *= base;
+        base %= modulus;
+        exp >>= 1;
+    }
+ 
+    total %= modulus;
+ 
+    return total
+}
+
+fn main() {
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+ 
+    let n: i64 = v[0].parse().expect("REASON");
+    let k: i64 = v[1].parse().expect("REASON");
+    let mut p: i64 = 0;
+    const MOD: i64 = 10_i64.pow(6) + 3;
+    
+    let mut temp: i64 = k;
+    while temp % 2 == 0 {
+        temp /= 2;
+        p += 1;
+    }
+    
+    let mut sum: i64 = n - p;
+    if p > 0 {
+        for i in 1..=p {
+            sum += k/(1<<i);
+        }
+    } else {
+        let mut m: i64 = 64;
+        for i in (0..64).rev() {
+            if k & (1<<i) != 0 {
+                m = i;
+                break
+            }
+        }
+        
+        for i in 1..=m{
+            sum += k/(1<<i);
+            sum %= MOD - 1;
+        }
+    }
+    
+    
+    let res = exp(&2_i64, &n, &MOD);
+    
+    let a = n % (MOD - 1);
+    let b = k % (MOD - 1);
+    let mut c = a*b - sum;
+    
+    while c < 0 {
+        c += MOD - 1;
+    } 
+        
+    c %= MOD - 1;
+    let mut numer: i64 = exp(&2_i64, &c, &MOD);
+    let denom: i64 = numer;
+    
+    if res >= k {
+        let mut prod: i64 = res;
+        
+        for i in 1..k {
+            prod *= res - i;
+            prod %= MOD;
+        }
+        
+        sum *= -1;
+        while sum < 0 {
+            sum += MOD - 1;
+        }
+        
+        sum %= MOD - 1;
+        prod *= exp(&2_i64, &sum, &MOD);
+        
+        numer -= prod;
+        while numer < 0 {
+            numer += MOD;
+        }
+        
+    }
+    
+    println!("{:?} {:?}", numer denom)    
+}
