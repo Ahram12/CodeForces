@@ -1,0 +1,63 @@
+fn main() {
+    // num rooms
+    let m: usize = 5;
+    //num students
+    let n: usize = 7;
+    //num baths:
+    let arr: Vec<usize> = vec![1, 1, 2, 3 , 1];
+    
+    let mut p: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; n + 1]; n + 1]; m];
+    let mut cdf: Vec<Vec<Vec<f64>>> = vec![vec![vec![1.0; n + 1]; n + 1]; m];
+    let mut c: Vec<Vec<f64>> = vec![vec![0.0; n + 1]; n + 1];
+    
+    for i in 0..=n {
+        for j in 0..=i {
+            if j == 0 || j == i {
+                c[i][j] = 1.0;
+            } else {
+                c[i][j] = c[i - 1][j] + c[i - 1][j - 1];
+            }
+        }
+    }
+    
+    for j in 0..=n {
+        for k in 1..=n {
+            let val: usize = ((j as f64)/(arr[0] as f64)).ceil() as usize;
+            if val == k {
+                p[0][j][k] = 1.0;
+            }
+        }
+        
+        for k in (0..n).rev() {
+            cdf[0][j][k] = cdf[0][j][k + 1] - p[0][j][k + 1];
+        }
+    }
+    
+    for i in 1..m {
+        let frac: f64 = 1.0/(i as f64 + 1.0);
+        for j in 1..=n {
+            for k in 1..=n {
+                for s in 0..=j {
+                    let val: usize = ((s as f64)/(arr[i] as f64)).ceil() as usize;
+                    let prob: f64 = c[j][s]*frac.powf(s as f64)*(1.0 - frac).powf((j - s) as f64);
+                    if val < k {
+                        p[i][j][k] += prob*p[i - 1][j - s][k];
+                    } else if val == k {
+                        p[i][j][k] += prob*cdf[i - 1][j - s][k];
+                    }
+                }
+            }
+            
+            for k in (0..n).rev() {
+                cdf[i][j][k] = cdf[i][j][k + 1] - p[i][j][k + 1];
+            }
+        }
+    }
+    
+    let mut exp: f64 = 0.0;
+    for k in 1..=n {
+        exp += (k as f64)*p[m - 1][n][k];
+    }
+    
+    println!("{:?}", exp)
+}
