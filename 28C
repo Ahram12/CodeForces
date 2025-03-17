@@ -1,10 +1,29 @@
+use std::io;
+
 fn main() {
-    // num rooms
-    let m: usize = 5;
-    //num students
-    let n: usize = 7;
-    //num baths:
-    let arr: Vec<usize> = vec![1, 1, 2, 3 , 1];
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+    let n: usize = v[0].parse().expect("REASON");
+    let m: usize = v[1].parse().expect("REASON");
+    
+    let mut temp_string: String = String::new();
+
+    io::stdin()
+        .read_line(&mut temp_string)
+        .expect("Failed to read line");
+
+    let temp_v: Vec<&str> = temp_string.trim().split(' ').collect();
+    let mut arr: Vec<usize> = Vec::new();
+    
+    for i in 0..m {
+        let temp: usize = temp_v[i].parse().expect("REASON");
+        arr.push(temp);
+    }
     
     let mut p: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; n + 1]; n + 1]; m];
     let mut cdf: Vec<Vec<Vec<f64>>> = vec![vec![vec![1.0; n + 1]; n + 1]; m];
