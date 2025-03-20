@@ -1,0 +1,80 @@
+fn power(matrix: &Vec<Vec<i64>>, pow: &i64, modulus: &i64) -> Vec<Vec<i64>> {
+    let mut base: Vec<Vec<i64>> = matrix.clone();
+    let mut exp: i64 = *pow;
+    let modulus: i64 = *modulus;
+    let mut total: Vec<Vec<i64>> = vec![vec![0; matrix.len()]; matrix.len()];
+    
+    for i in 0..matrix.len() {
+        for j in 0..matrix.len() {
+            if i == j {
+                total[i][j] = 1;
+            }
+        }
+    }
+    
+    while exp > 0 {
+        if exp & 1 == 1 {
+            total = multiplication(&total, &base, &modulus).clone();
+        }
+        base = multiplication(&base, &base, &modulus).clone();
+        exp >>= 1;
+    }
+    
+    return total
+
+}
+
+
+fn multiplication(a: &Vec<Vec<i64>>, b: &Vec<Vec<i64>>, modulus: &i64) -> Vec<Vec<i64>> {
+    let m = a.len();
+    let p = b[0].len();
+    
+    let mut res: Vec<Vec<i64>> = vec![vec![0; p]; m];
+    
+    for k in 0..m {
+        for j in 0..p {
+            let mut sum: i64 = 0;
+            for i in 0..m {
+                sum += (a[k][i]*b[i][j]) % *modulus;
+                sum %= *modulus;
+            }
+            res[k][j] = sum;
+        }
+    }
+    
+    return res
+}
+
+fn main() {
+    let r: i64 = 10_i64.pow(12);
+    let l: i64 = 1;
+    let k: i64 = 325;
+    let mut d: i64 = 0;
+    
+    let mut low: i64 = 1;
+    let mut high: i64 = r;
+    
+    while low <= high {
+        let mid = (low + high)/2;
+        let lower = ((l as f64)/(mid as f64)).ceil() as i64 - 1;
+        let upper = ((r as f64)/(mid as f64)).floor() as i64 - k;
+        if lower <= upper {
+            let temp_lower = ((l as f64)/((mid + 1) as f64)).ceil() as i64 - 1;
+            let temp_higher = ((r as f64)/((mid + 1) as f64)).floor() as i64 - k;
+            if temp_lower <= temp_higher {
+                low = mid + 1;
+            } else {
+                d = mid;
+                break
+            }
+        } else {
+            high = mid - 1
+        }
+    }
+    
+    let m: i64 = 10;
+    let mut matrix: Vec<Vec<i64>> = vec![vec![1, 1], vec![1, 0]];
+    matrix = power(&matrix, &(d - 1), &m).clone();
+    
+    println!("{:?} {:?}", (matrix[1][0] + matrix[1][1]) % m, d)
+}
