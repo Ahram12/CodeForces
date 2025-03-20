@@ -35,18 +35,18 @@ fn main() {
     let mut p: i64 = 0;
     const MOD: i64 = 10_i64.pow(6) + 3;
     
-    let mut temp: i64 = k;
-    while temp % 2 == 0 {
-        temp /= 2;
-        p += 1;
-    }
-    
-    let mut sum: i64 = n - p;
-    if p > 0 {
-        for i in 1..=p {
-            sum += k/(1<<i);
-        }
+    if n < 64 && 1<<n < k {
+        println!("{:?} {:?}", 1, 1) 
     } else {
+    
+        let mut temp: i64 = k;
+        while temp % 2 == 0 {
+            temp /= 2;
+            p += 1;
+        }
+        
+        let mut sum: i64 = n - p;
+    
         let mut m: i64 = 64;
         for i in (0..64).rev() {
             if k & (1<<i) != 0 {
@@ -54,50 +54,58 @@ fn main() {
                 break
             }
         }
+            
+    
+        if p > 0 {
+            for i in 1..=m {
+                sum += k/(1<<i);
+            }
+        } else {
+            for i in 1..=m{
+                sum += k/(1<<i);
+                sum %= MOD - 1;
+            }
+        }
         
-        for i in 1..=m{
-            sum += k/(1<<i);
+        
+        let res = exp(&2_i64, &n, &MOD);
+        
+        let a = n % (MOD - 1);
+        let b = k % (MOD - 1);
+        let mut c = a*b - sum;
+        c %= MOD - 1;
+        
+        while c < 0 {
+            c += MOD - 1;
+        } 
+            
+        c %= MOD - 1;
+        let mut numer: i64 = exp(&2_i64, &c, &MOD);
+        let denom: i64 = numer;
+        
+        if k < MOD {
+            let mut prod: i64 = res;
+            
+            for i in 1..k {
+                prod *= res - i;
+                prod %= MOD;
+            }
+            
+            sum *= -1;
+            while sum < 0 {
+                sum += MOD - 1;
+            }
+            
             sum %= MOD - 1;
+            prod *= exp(&2_i64, &sum, &MOD);
+            
+            numer -= prod;
+            while numer < 0 {
+                numer += MOD;
+            }
+            
         }
+        
+        println!("{:?} {:?}", numer, denom)
     }
-    
-    
-    let res = exp(&2_i64, &n, &MOD);
-    
-    let a = n % (MOD - 1);
-    let b = k % (MOD - 1);
-    let mut c = a*b - sum;
-    
-    while c < 0 {
-        c += MOD - 1;
-    } 
-        
-    c %= MOD - 1;
-    let mut numer: i64 = exp(&2_i64, &c, &MOD);
-    let denom: i64 = numer;
-    
-    if res >= k {
-        let mut prod: i64 = res;
-        
-        for i in 1..k {
-            prod *= res - i;
-            prod %= MOD;
-        }
-        
-        sum *= -1;
-        while sum < 0 {
-            sum += MOD - 1;
-        }
-        
-        sum %= MOD - 1;
-        prod *= exp(&2_i64, &sum, &MOD);
-        
-        numer -= prod;
-        while numer < 0 {
-            numer += MOD;
-        }
-        
-    }
-    
-    println!("{:?} {:?}", numer denom)    
 }
