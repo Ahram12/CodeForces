@@ -38,12 +38,6 @@ fn main() {
     if n < 64 && 1<<n < k {
         println!("{:?} {:?}", 1, 1) 
     } else {
-    
-        let mut temp: i64 = k;
-        while temp % 2 == 0 {
-            temp /= 2;
-            p += 1;
-        }
         
         let mut sum: i64 = n - p;
     
@@ -56,15 +50,9 @@ fn main() {
         }
             
     
-        if p > 0 {
-            for i in 1..=m {
-                sum += k/(1<<i);
-            }
-        } else {
-            for i in 1..=m{
-                sum += k/(1<<i);
-                sum %= MOD - 1;
-            }
+        for i in 1..=m{
+            sum += k/(1<<i);
+            sum %= MOD - 1;
         }
         
         
