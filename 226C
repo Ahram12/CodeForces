@@ -1,3 +1,6 @@
+use std::io;
+use std::cmp;
+
 fn power(matrix: &Vec<Vec<i64>>, pow: &i64, modulus: &i64) -> Vec<Vec<i64>> {
     let mut base: Vec<Vec<i64>> = matrix.clone();
     let mut exp: i64 = *pow;
@@ -46,35 +49,34 @@ fn multiplication(a: &Vec<Vec<i64>>, b: &Vec<Vec<i64>>, modulus: &i64) -> Vec<Ve
 }
 
 fn main() {
-    let r: i64 = 10_i64.pow(12);
-    let l: i64 = 1;
-    let k: i64 = 325;
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+    let m: i64 = v[0].parse().expect("REASON");
+    let l: i64 = v[1].parse().expect("REASON");
+    let r: i64 = v[2].parse().expect("REASON");
+    let k: i64 = v[3].parse().expect("REASON");
+
     let mut d: i64 = 0;
     
-    let mut low: i64 = 1;
-    let mut high: i64 = r;
-    
-    while low <= high {
-        let mid = (low + high)/2;
-        let lower = ((l as f64)/(mid as f64)).ceil() as i64 - 1;
-        let upper = ((r as f64)/(mid as f64)).floor() as i64 - k;
-        if lower <= upper {
-            let temp_lower = ((l as f64)/((mid + 1) as f64)).ceil() as i64 - 1;
-            let temp_higher = ((r as f64)/((mid + 1) as f64)).floor() as i64 - k;
-            if temp_lower <= temp_higher {
-                low = mid + 1;
-            } else {
-                d = mid;
-                break
-            }
-        } else {
-            high = mid - 1
+    let sqrt: i64 = (r as f64).sqrt() as i64;
+    for i in 1..=sqrt {
+        if r/i - (l-1)/i >= k {
+            d = cmp::max(d, i);
+        }
+        
+        let temp = r/i;
+        if r/temp - (l - 1)/temp >= k {
+            d = cmp::max(d, r/i);
         }
     }
     
-    let m: i64 = 10;
     let mut matrix: Vec<Vec<i64>> = vec![vec![1, 1], vec![1, 0]];
     matrix = power(&matrix, &(d - 1), &m).clone();
     
-    println!("{:?} {:?}", (matrix[1][0] + matrix[1][1]) % m, d)
+    println!("{:?}", (matrix[1][0] + matrix[1][1]) % m)
 }
