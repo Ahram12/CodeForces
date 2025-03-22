@@ -8,18 +8,17 @@ fn main() {
         .expect("Failed to read line");
  
     let v: Vec<&str> = str.trim().split(' ').collect();
- 
     let n: i64 = v[0].parse().expect("REASON");
-    let k: i64 = v[0].parse().expect("REASON");
-    let mut nums: Vec<i64> = Vec::new();
+    let k: i64 = v[1].parse().expect("REASON");
 
+    let mut nums: Vec<i64> = Vec::new();
     let mut temp_str: String = String::new();
 
     io::stdin()
         .read_line(&mut temp_str)
         .expect("Failed to read line");
 
-    let temp_v: Vec<&str> = str.trim().split(' ').collect();
+    let temp_v: Vec<&str> = temp_str.trim().split(' ').collect();
     for i in 0..k as usize {
         let val: i64 = temp_v[i].parse().expect("REASON");
         nums.push(val);
