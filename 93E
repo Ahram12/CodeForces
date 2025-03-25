@@ -1,4 +1,4 @@
-//Not quite right
+//Not quite right, will try DFS search instead
 use std::io;
 
 fn main() {
