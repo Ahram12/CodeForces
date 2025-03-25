@@ -1,4 +1,5 @@
-//In progress
+use std::io;
+use std::cmp;
 
 fn helper(m: &i64, n: &i64) -> bool {
     let m: i64 = *m;
@@ -8,10 +9,34 @@ fn helper(m: &i64, n: &i64) -> bool {
     
     return upper >= lower
 }
-//(11829, 49760)
+
 fn main() {
-    let arr: Vec<i64> = vec![12141567, 352355786, 224123535];
-    let n: i64 = arr[0];
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+    let num_cases: usize = v[0].parse().expect("REASON");
+
+    let mut arr: Vec<i64> = Vec::new();
+    let mut n: i64 = i64::MAX;
+
+    let mut temp: String = String::new();
+        
+    io::stdin()
+        .read_line(&mut temp)
+        .expect("Failed to read line");
+
+    let w: Vec<&str> = temp.trim().split(' ').collect();
+
+    for i in 0..num_cases {
+        let val: i64 = w[i].parse().expect("REASON");
+        n = cmp::min(n, val);
+        arr.push(val);
+    }
+
     let sqrt: i64 = (n as f64).sqrt() as i64;
     let mut res: Vec<i64> = Vec::new();
     
@@ -58,5 +83,5 @@ fn main() {
     
  
     
-    println!("{:?}", (total, d))
+    println!("{:?}", total)
 }
