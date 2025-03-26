@@ -1,0 +1,94 @@
+use std::io;
+use std::cmp;
+
+fn exp(a: &i64, p: &i64, q: &i64) -> i64 {
+    let modulus: i64 = *q;
+    let mut base: i64 = *a;
+    let mut exp: i64 = *p;
+    let mut total: i64 = 1;
+ 
+    while exp > 0 {
+        if exp & 1 == 1 {
+            total *= base;
+            total %= modulus;
+        }
+        base *= base;
+        base %= modulus;
+        exp >>= 1;
+    }
+ 
+    total %= modulus;
+ 
+    return total
+}
+
+fn mushroom(k: i64, l: i64, r: i64, p: i64) -> i64 {
+    let mut res: i64 = 1;
+    
+    if p == 2 {
+        if k & 1 != 0 {
+            res = 0;
+        }
+    } else {
+        let mut exponent = exp(&2, &l, &(p - 1));
+        let w = exp(&k, &exponent, &p);
+    
+        if k & 1 != 0 {
+            res *= exp(&2, &(p - 2), &p);
+            res = exp(&res, &(r - l), &p);
+            if w % p == 0 {
+            } else if w % p == 1 {
+                res = 2;
+            } else {
+                exponent = exp(&2, &(r - l + 1), &(p - 1));
+                let numer = exp(&w, &exponent, &p) - 1;
+                let denom = exp(&(w - 1), &(p - 2), &p);
+                res *= (numer*denom) % p;
+            }
+        } else {
+            if w % p == 0 {
+            } else if w % p == 1 {
+                res *= exp(&2, &(r - l + 1), &p);
+            } else {
+                exponent = exp(&2, &(r - l + 1), &(p - 1));
+                let numer = exp(&w, &exponent, &p) - 1;
+                let denom = exp(&(w - 1), &(p - 2), &p);
+                res *= (numer*denom) % p;
+            }
+        }
+    }
+    
+    res %= p;
+    
+    return res
+}
+
+fn main {
+  let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+    let num_cases: usize = v[0].parse().expect("REASON");
+
+    for _ in 0..num_cases {
+      let mut m: String = String::new();
+
+      io::stdin()
+        .read_line(&mut m)
+        .expect("Failed to read line");
+ 
+      let w: Vec<&str> = m.trim().split(' ').collect();
+
+      let k: i64 = w[0].parse().expect("REASON");
+      let l: i64 = w[1].parse().expect("REASON");
+      let r: i64 = w[2].parse().expect("REASON");
+      let p: i64 = w[3].parse().expect("REASON");
+
+      println!("{:?}", mushroom(k, l, r, p))
+
+}
+
+      
