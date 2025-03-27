@@ -1,5 +1,4 @@
 use std::io;
-use std::cmp;
 
 fn exp(a: &i64, p: &i64, q: &i64) -> i64 {
     let modulus: i64 = *q;
@@ -31,7 +30,7 @@ fn mushroom(k: i64, l: i64, r: i64, p: i64) -> i64 {
         }
     } else {
         let mut exponent = exp(&2, &l, &(p - 1));
-        let w = exp(&k, &exponent, &p);
+        let w = if k % p == 0 {0} else{exp(&k, &exponent, &p)};
     
         if k & 1 != 0 {
             res *= exp(&2, &(p - 2), &p);
@@ -63,7 +62,7 @@ fn mushroom(k: i64, l: i64, r: i64, p: i64) -> i64 {
     return res
 }
 
-fn main {
+fn main() {
   let mut n: String = String::new();
  
     io::stdin()
