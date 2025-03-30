@@ -1,3 +1,5 @@
+use std::io;
+
 fn exp(a: &i64, p: &i64) -> i64 {
     const MOD: i64 = 10_i64.pow(9) + 7;
     let mut base: i64 = *a;
@@ -78,6 +80,27 @@ fn s(n: &i64) -> i64 {
 }
 
 fn main() {
-    let n: i64 = 2;
-    println!("{:?}", s(&n))
+    let mut n: String = String::new();
+ 
+    io::stdin()
+        .read_line(&mut n)
+        .expect("Failed to read line");
+ 
+    let v: Vec<&str> = n.trim().split(' ').collect();
+    let l: i64 = v[0].parse().expect("REASON");
+    let r: i64 = v[1].parse().expect("REASON");
+
+    const MOD: i64 = 10_i64.pow(9) + 7;
+    
+    if l == 1 {
+      println!("{:?}", s(&r))  
+    } else {
+        let mut res: i64 = s(&r) - s(&(l - 1));
+        while res < 0 {
+            res += MOD;
+        }
+        
+        res %= MOD;
+        println!("{:?}", res)
+    }
 }
